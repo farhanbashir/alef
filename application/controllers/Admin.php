@@ -61,6 +61,141 @@ class Admin extends CI_Controller {
         $this->load->view('welcome_message', array('content' => $content));
     }
 
+    function create_key()
+    {
+        $data = array();
+
+        $message = "";
+        //$admin = $this->user->get_admin();
+        $this->load->library('form_validation');
+
+        $this->form_validation->set_rules('key', 'key', 'trim|required');
+        $this->form_validation->set_rules('phone', 'phone', 'trim|required');
+        $this->form_validation->set_rules('email', 'email', 'trim|required');
+        $this->form_validation->set_rules('full_name', 'Name', 'trim|required');
+
+        $data['error'] = "";
+        if ($this->form_validation->run())
+        {
+           // Form was submitted and there were no errors
+           $key        = $this->input->post('key');
+           $phone     = $this->input->post('phone');
+           $email  = $this->input->post('email');
+           $full_name    = $this->input->post('full_name');
+
+
+           $uniqid = $this->input->post('uniqid');
+           //$service_id = (int) $this->input->post('service_id');
+
+           $params       = array('key'=>$key,
+           'phone'     =>$phone,
+           'email'  =>$email,
+           'full_name' =>$full_name
+           );
+
+          $key_id = $this->authenticate->create_key($params);
+
+          redirect(base_url().'index.php/admin/key_detail/'.$key_id);
+
+
+
+
+        }
+        else
+        {
+            $is_submit = ($this->input->post('is_submit')) ? $this->input->post('is_submit') : 0;
+            $uniqid = ($this->input->post('uniqid')) ? $this->input->post('uniqid') : uniqid();
+        }
+
+
+
+        $data['uniqid'] = $uniqid;
+        //$data['milestones'] = $this->milestone->get_milestones();
+        $content = $this->load->view('create_key.php', $data ,true);
+        $this->load->view('welcome_message', array('content' => $content));
+    }
+
+    function edit_key($key_id)
+    {
+        $error = "";
+        $message = "";
+        //$admin = $this->user->get_admin();
+
+        if($key_id == "")
+            redirect(base_url());
+        else
+            $key_id = intval($key_id);
+
+        //debug($_REQUEST,1);
+
+        $this->load->library('form_validation');
+
+        $this->form_validation->set_rules('key', 'key', 'trim|required');
+        $this->form_validation->set_rules('phone', 'phone', 'trim|required');
+        $this->form_validation->set_rules('email', 'email', 'trim|required');
+        $this->form_validation->set_rules('full_name', 'Name', 'trim|required');
+        
+        if ($this->form_validation->run())
+        {
+           // Form was submitted and there were no errors
+           $key        = $this->input->post('key');
+           $phone     = $this->input->post('phone');
+           $email  = $this->input->post('email');
+           $full_name    = $this->input->post('full_name');
+           
+           $uniqid = $this->input->post('uniqid');
+           //$service_id = (int) $this->input->post('service_id');
+
+           $params       = array('key'=>$key,
+           'phone'     =>$phone,
+           'email'  =>$email,
+           'full_name' =>$full_name
+           );
+
+           if($error == "")
+           {
+              $result = $this->authenticate->edit_key($key_id,$params);
+              redirect(base_url().'index.php/admin/key_detail/'.$key_id);
+           }
+
+        }
+        else
+        {
+            $is_submit = ($this->input->post('is_submit')) ? $this->input->post('is_submit') : 0;
+            $uniqid = ($this->input->post('uniqid')) ? $this->input->post('uniqid') : uniqid();
+        }
+
+
+        $data = array();
+
+
+        $data['error'] = $error;
+        $data['uniqid'] = $uniqid;
+        $data['detail'] = $this->authenticate->get_key_detail($key_id);
+        $content = $this->load->view('edit_key.php', $data ,true);
+        $this->load->view('welcome_message', array('content' => $content));
+    }
+
+    public function key_detail($key_id)
+    {
+        $data = array();
+        $data['detail'] = $this->authenticate->get_key_detail($key_id);
+        $content = $this->load->view('key_detail.php', $data ,true);
+        $this->load->view('welcome_message', array('content' => $content));
+    }
+
+    function deactivate_key($key_id)
+    {
+        $this->authenticate->deactivate_key($key_id);
+        redirect(base_url().'/index.php/admin/key_detail/'.$key_id);
+    }
+
+    function activate_key($key_id)
+    {
+        $this->authenticate->activate_key($key_id);
+        redirect(base_url().'/index.php/admin/key_detail/'.$key_id);
+    }
+
     public function news()
     {
         $data = array();
@@ -79,6 +214,203 @@ class Admin extends CI_Controller {
         $data['news'] = $news;
         $content = $this->load->view('news.php', $data ,true);
         $this->load->view('welcome_message', array('content' => $content));
+    }
+
+    function create_news()
+    {
+        $data = array();
+        $upload_path = './assets/uploads/';
+        $config['upload_path'] = $upload_path;//'./uploads/';
+        $config['allowed_types'] = 'gif|jpg|png';
+        $config['max_size'] = '100';
+        $config['max_width']  = '1024';
+        $config['max_height']  = '768';
+        $this->load->library('upload',$config);
+        $message = "";
+        //$admin = $this->user->get_admin();
+        $this->load->library('form_validation');
+
+        $this->form_validation->set_rules('title', 'title', 'trim|required');
+        $this->form_validation->set_rules('intro', 'intro', 'trim|required');
+        $this->form_validation->set_rules('detail', 'detail', 'trim|required');
+        $this->form_validation->set_rules('date', 'date', 'trim|required');
+        //$this->form_validation->set_rules('image', 'image', 'trim|required');
+        $this->form_validation->set_rules('is_active', 'is active', 'trim|required');
+
+        $data['error'] = "";
+        if ($this->form_validation->run())
+        {
+           // Form was submitted and there were no errors
+           $title        = $this->input->post('title');
+           $intro     = $this->input->post('intro');
+           $detail  = $this->input->post('detail');
+           $date    = $this->input->post('date');
+           //$image    = $this->input->post('image');
+           $is_active    = $this->input->post('is_active');
+           $image = "";
+
+           $uniqid = $this->input->post('uniqid');
+           //$service_id = (int) $this->input->post('service_id');
+
+           if ( ! $this->upload->do_upload('image'))
+            {
+              $data['error'] = $this->upload->display_errors();
+            }
+            else
+            {
+              $data = $this->upload->data();
+
+              $image = 'assets/uploads/'.$data['raw_name'].$data['file_ext'];
+              $protocol = stripos($_SERVER['SERVER_PROTOCOL'],'https') === true ? 'https://' : 'http://';
+
+              
+              $path = substr($_SERVER['REQUEST_URI'],0,stripos($_SERVER['REQUEST_URI'], "index.php"));
+              $image = $protocol.$_SERVER['SERVER_NAME'].$path.$image;    
+              
+            } 
+
+           $params       = array('title'=>$title,
+           'intro'     =>$intro,
+           'detail'  =>$detail,
+           'date' =>$date,
+           'image' =>$image,
+           'is_active' =>$is_active
+           );
+
+          if($image != "")
+          {
+              $news_id = $this->news->create_news($params);
+
+              redirect(base_url().'index.php/admin/news_detail/'.$news_id);
+          } 
+          
+        }
+        else
+        {
+            $is_submit = ($this->input->post('is_submit')) ? $this->input->post('is_submit') : 0;
+            $uniqid = ($this->input->post('uniqid')) ? $this->input->post('uniqid') : uniqid();
+        }
+
+
+
+        $data['uniqid'] = $uniqid;
+        //$data['milestones'] = $this->milestone->get_milestones();
+        $content = $this->load->view('create_news.php', $data ,true);
+        $this->load->view('welcome_message', array('content' => $content));
+    }
+
+    function edit_news($news_id)
+    {
+        $error = "";
+        $message = "";
+        $upload_path = './assets/uploads/';
+        $config['upload_path'] = $upload_path;//'./uploads/';
+        $config['allowed_types'] = 'gif|jpg|png';
+        $config['max_size'] = '100';
+        $config['max_width']  = '1024';
+        $config['max_height']  = '768';
+        $this->load->library('upload',$config);
+        //$admin = $this->user->get_admin();
+
+        if($news_id == "")
+            redirect(base_url());
+        else
+            $news_id = intval($news_id);
+
+        //debug($_REQUEST,1);
+
+        $this->load->library('form_validation');
+
+        $this->form_validation->set_rules('title', 'title', 'trim|required');
+        $this->form_validation->set_rules('intro', 'intro', 'trim|required');
+        $this->form_validation->set_rules('detail', 'detail', 'trim|required');
+        $this->form_validation->set_rules('date', 'date', 'trim|required');
+        //$this->form_validation->set_rules('image', 'image', 'trim|required');
+        $this->form_validation->set_rules('is_active', 'is active', 'trim|required');
+        
+        if ($this->form_validation->run())
+        {
+           // Form was submitted and there were no errors
+           $title        = $this->input->post('title');
+           $intro     = $this->input->post('intro');
+           $detail  = $this->input->post('detail');
+           $date    = $this->input->post('date');
+           //$image    = $this->input->post('image');
+           $is_active    = $this->input->post('is_active');
+           
+           $uniqid = $this->input->post('uniqid');
+           //$service_id = (int) $this->input->post('service_id');
+
+           $params       = array('title'=>$title,
+           'intro'     =>$intro,
+           'detail'  =>$detail,
+           'date' =>$date,
+           //'image' =>$image,
+           'is_active' =>$is_active
+           );
+
+           if(isset($_FILES['image'])) 
+          {
+              if ( ! $this->upload->do_upload('image'))
+              {
+                $error = $this->upload->display_errors();
+              }
+              else
+              {
+                $data = $this->upload->data();
+
+                $image = 'assets/uploads/'.$data['raw_name'].$data['file_ext'];
+                $protocol = stripos($_SERVER['SERVER_PROTOCOL'],'https') === true ? 'https://' : 'http://';
+
+                
+                $path = substr($_SERVER['REQUEST_URI'],0,stripos($_SERVER['REQUEST_URI'], "index.php"));
+                $image = $protocol.$_SERVER['SERVER_NAME'].$path.$image;    
+                $params['image'] = $image;
+              }  
+          }
+
+           if($error == "")
+           {
+              $result = $this->news->edit_news($news_id,$params);
+              redirect(base_url().'index.php/admin/news_detail/'.$news_id);
+           }
+
+        }
+        else
+        {
+            $is_submit = ($this->input->post('is_submit')) ? $this->input->post('is_submit') : 0;
+            $uniqid = ($this->input->post('uniqid')) ? $this->input->post('uniqid') : uniqid();
+        }
+
+
+        $data = array();
+
+
+        $data['error'] = $error;
+        $data['uniqid'] = $uniqid;
+        $data['detail'] = $this->news->get_news_detail($news_id);
+        $content = $this->load->view('edit_news.php', $data ,true);
+        $this->load->view('welcome_message', array('content' => $content));
+    }
+
+    public function news_detail($news_id)
+    {
+        $data = array();
+        $data['detail'] = $this->news->get_news_detail($news_id);
+        $content = $this->load->view('news_detail.php', $data ,true);
+        $this->load->view('welcome_message', array('content' => $content));
+    }
+
+    function deactivate_news($news_id)
+    {
+        $this->news->deactivate_news($news_id);
+        redirect(base_url().'/index.php/admin/news_detail/'.$news_id);
+    }
+
+    function activate_news($news_id)
+    {
+        $this->news->activate_news($news_id);
+        redirect(base_url().'/index.php/admin/news_detail/'.$news_id);
     }
 
     /*public function parents()

@@ -19,6 +19,18 @@ function get_news_detail($news_id)
     return $result[0];
 }
 
+function create_news($data)
+ {
+    $this->db->insert('news',$data);
+    return $this->db->insert_id();
+ }
+
+ function edit_news($id, $data)
+ {
+    $this->db->where('news_id', $id);
+    $this->db->update('news',$data);
+    return ($this->db->affected_rows() != 1) ? false : true;
+ }
 
  function get_news()
  {
@@ -36,6 +48,20 @@ function get_news_detail($news_id)
     $result = $query->result_array();
     $query->free_result();
     return $result;
+ }
+
+ function deactivate_news($news_id)
+ {
+    $sql = "update news set is_active=0 where news_id=$news_id";
+    $query = $this->db->query($sql);
+
+ }
+
+ function activate_news($news_id)
+ {
+    $sql = "update news set is_active=1 where news_id=$news_id";
+    $query = $this->db->query($sql);
+
  }
 
 }

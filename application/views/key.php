@@ -9,6 +9,9 @@
 
     <div class="row">
         <div class="col-xs-12">
+            <a href="<?php echo site_url('admin/create_key') ?>"><button class="btn btn-info pull-right" style="margin:10px ">Add Key</button></a>
+        </div>
+        <div class="col-xs-12">
             <div class="box">
                 <div class="box-header">
                 </div><!-- /.box-header -->
@@ -17,7 +20,11 @@
                         <tr>
                             <th>#</th>
                             <th>Key</th>
-                            <!-- <th>Action</th> -->
+                            <th>Phone</th>
+                            <th>Email</th>
+                            <th>Full Name</th>
+                            <th>Status</th>
+                            <th>Action</th>
                         </tr>
                         <?php
                         foreach($keys as $key)
@@ -26,11 +33,15 @@
                         <tr>
                             <td><?php echo $key['id'];?></td>
                             <td><?php echo $key['key'];?></td>
-                            <!-- <td>
-                                <a href="<?php echo base_url();?>/index.php/welcome/feed_detail/<?php echo $feed['feed_id'];?>">View</a>
+                            <td><?php echo $key['phone'];?></td>
+                            <td><?php echo $key['email'];?></td>
+                            <td><?php echo $key['full_name'];?></td>
+                            <td><?php echo ($key['is_active'] == 1) ? "Active" : "Inactive";?></td>
+                            <td>
+                                <a href="<?php echo base_url();?>/index.php/admin/key_detail/<?php echo $key['id'];?>">View</a>
                                 &nbsp;&nbsp;&nbsp;
-                                <a href="<?php echo base_url();?>/index.php/welcome/edit_feed/<?php echo $feed['feed_id'];?>">Edit</a>
-                            </td> -->
+                                <a href="<?php echo base_url();?>/index.php/admin/edit_key/<?php echo $key['id'];?>">Edit</a>
+                            </td>
                         </tr>
                         <?php
                         }

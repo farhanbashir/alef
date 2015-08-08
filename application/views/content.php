@@ -62,6 +62,9 @@
                                         <tbody><tr>
                                             <th style="width: 10px">#</th>
                                             <th>Key</th>
+                                            <th>Phone</th>
+                                            <th>Email</th>
+                                            <th>Full Name</th>
                                         </tr>
                                         <?php
                                         $i=0;
@@ -72,6 +75,9 @@
                                         <tr>
                                             <td><?php echo $i;?></td>
                                             <td><?php echo $key['key'];?></td>
+                                            <td><?php echo $key['phone'];?></td>
+                                            <td><?php echo $key['email'];?></td>
+                                            <td><?php echo $key['full_name'];?></td>
                                         </tr>
                                         <?php
                                         }

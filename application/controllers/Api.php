@@ -73,8 +73,27 @@ class Api extends REST_Controller {
     	
        if(count($result) > 0)
 	   {
-	    	$data["header"]["error"] = "0";
-        	$data["body"] = $result; 
+	   		if($result['email'] != '')
+	   		{
+	   			$this->load->library('email');
+
+				$this->email->from('admin@alef.com', 'Alef');
+				$this->email->to($result['email']); 
+				
+				$this->email->subject('Your Key');
+				$this->email->message('Your key is '.$result['key']);	
+
+				$this->email->send();
+
+		    	$data["header"]["error"] = "0";
+	        	$data["header"]["message"] = "Admin has sent your key to your email. Please check your email.";
+	   		}	
+	   		else
+	   		{
+	   			$data["header"]["error"] = "1";
+        		$data["header"]["message"] = "No email is set against this phone.";
+	   		}	
+	   		
 	   }
 	   else
 	   {

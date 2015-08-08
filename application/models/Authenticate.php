@@ -7,6 +7,29 @@ Class Authenticate extends CI_Model
      return $this->db->count_all('authenticate');
  }
 
+ function create_key($data)
+ {
+    $this->db->insert('authenticate',$data);
+    return $this->db->insert_id();
+ }
+
+ function edit_key($id, $data)
+ {
+    $this->db->where('id', $id);
+    $this->db->update('authenticate',$data);
+    return ($this->db->affected_rows() != 1) ? false : true;
+ }
+
+ function get_key_detail($id)
+ {
+        $sql = "select * from authenticate 
+            where id=$id" ;
+    $query = $this->db->query($sql);
+    $result = $query->result_array();
+    $query->free_result();
+    return $result[0];
+ }
+
  function key_exists($key,$phone)
  {
    $this -> db -> select('id');
@@ -56,6 +79,20 @@ Class Authenticate extends CI_Model
      $result = $query->result_array();
      $query->free_result();
      return $result;
+ }
+
+ function deactivate_key($id)
+ {
+    $sql = "update authenticate set is_active=0 where id=$id";
+    $query = $this->db->query($sql);
+
+ }
+
+ function activate_key($id)
+ {
+    $sql = "update authenticate set is_active=1 where id=$id";
+    $query = $this->db->query($sql);
+
  }
 
 }

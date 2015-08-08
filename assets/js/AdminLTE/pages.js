@@ -12,11 +12,7 @@
 
 $(function($) {
     "use strict";
-console.log('here');
-
-// edit event
-$('#start_date').datetimepicker({format:'Y-m-d H:i:s'});
-$('#end_date').datetimepicker({format:'Y-m-d H:i:s'});
+	$('#date').datepicker({format:'yyyy-mm-dd'});
 
 
 }(jQuery));
